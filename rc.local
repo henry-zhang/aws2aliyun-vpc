@@ -1,0 +1,5 @@
+ip link add Tunnel1 type vti local aliyun_local_ip  remote aws-public-ip key 100
+ip addr add 169.254.24.30/30 remote 169.254.24.29/30 dev Tunnel1
+ip link set Tunnel1 up mtu 1419
+ip route add aws_local_ip dev Tunnel1 metric 100
+iptables-restore < /etc/iptables.conf
