@@ -118,18 +118,24 @@ Your tunnel interface is now ready for use, however if your device ever reboots 
 1) Save your running iptables configuration by executing the command 'sudo iptables-save > /etc/iptables.conf'
 
 2) Open /etc/rc.local and append the following to the end of the file, before the line 'exit 0':
+
+ip link add Tunnel1 type vti local aliyun_local_ip  remote aws_public_ip key 100
+ip addr add 169.254.24.30/30 remote 169.254.24.29/30 dev Tunnel1
+ip link set Tunnel1 up mtu 1419
+ip route add aws_local_subnet dev Tunnel1 metric 100
 iptables-restore < /etc/iptables.conf
 
-3) Open /etc/network/interfaces and append the following to the end of the file. If your device is in a VPC or behind a device performing NAT on your local network, replace <LOCAL IP> with the private IP of the device. Otherwise, use 161.117.81.109. The "key" value below MUST match the integer you placed as the "mark" value in your configuration file.
-
-auto Tunnel1
-iface Tunnel1 inet manual
-pre-up ip link add Tunnel1 type vti local aliyun_local_ip remote aws_public_ip key 100
-pre-up ip addr add 169.254.24.30/30 remote 169.254.24.29/30 dev Tunnel1
-up ip link set Tunnel1 up mtu 1419
+#5: vpc route table update &Testing
+update both aws and aliyun ,then
+Please use another instances instead of openswan instances to do ping 
 
 
-=== HOW-TO ===
+
+
+
+=== DONE ===
+
+=== HOW-TO-HA OPTIONAL ===
 1) Create a new file at /etc/ipsec.d/aws-updown.sh if it doesn't already exist, and append the following script to the file:
 
 #!/bin/bash
@@ -250,4 +256,5 @@ sudo iptables -A INPUT -s <VGW PUBLIC IP> -j DROP
   - Amazon Virtual Private Cloud Network Administrator Guide:
         http://docs.amazonwebservices.com/AmazonVPC/latest/NetworkAdminGuide
   - XSL Version: 2009-07-15-1119716
+# aws2aliyun-vpc
 # aws2aliyun-vpc
